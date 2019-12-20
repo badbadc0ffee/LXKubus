@@ -1,25 +1,33 @@
 LXModel buildModel() {
-  // A three-dimensional grid model
-  return new GridModel3D();
+  return new Board();
 }
 
-public static class GridModel3D extends LXModel {
-  
-  public final static int SIZE = 20;
-  public final static int SPACING = 10;
-  
-  public GridModel3D() {
-    super(new Fixture());
+public static class Board extends LXModel {
+
+  public final static int   SIZE    = 12;
+  public final static float SPACING = 50/3 * MM;
+
+  public Board() {
+    super(new Fixture(new LXVector(0, 0, -SIZE/2*SPACING), new LXVector(SPACING, 0, 0), new LXVector(0, -SPACING, 0)));
   }
-  
+
   public static class Fixture extends LXAbstractFixture {
-    Fixture() {
-      for (int z = 0; z < SIZE; ++z) {
-        for (int y = 0; y < SIZE; ++y) {
-          for (int x = 0; x < SIZE; ++x) {
-            addPoint(new LXPoint(x*SPACING, y*SPACING, z*SPACING));
+    Fixture(LXVector origin, LXVector colstep, LXVector rowstep) {
+      LXVector pos = origin;
+      pos.sub(colstep.mult((SIZE/2+0.5)));
+      pos.sub(rowstep.mult((SIZE/2+0.5)));
+      for (int row = 0; row < SIZE; ++row) {
+        for (int col = 0; col < SIZE; ++col) {
+          addPoint(new LXPoint(pos));
+          if (col < SIZE-1) {
+            if (row %2 ==0) {
+              pos.add(colstep);
+            } else {
+              pos.sub(colstep);
+            }
           }
         }
+        pos.add(rowstep);
       }
     }
   }

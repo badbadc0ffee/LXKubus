@@ -7,6 +7,19 @@ void setup() {
 }
 
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
+  try {
+    LXDatagramOutput output = new LXDatagramOutput(lx);
+    for (int f=0; f<6; f++) {
+      int[] pointIndices = new int[144];
+      for (int i=0; i<144; i++) {
+        pointIndices[i] = i+f*144;
+      };
+      output.addDatagram(new StreamingACNDatagram(1+f, pointIndices).setAddress("192.168.2.142"));
+    }
+    lx.engine.addOutput(output);
+  }
+  catch (Exception e) {
+  }
 }
 
 void onUIReady(heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {

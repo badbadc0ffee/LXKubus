@@ -1,7 +1,3 @@
-// In this file you can define your own custom patterns
-
-// Here is a fairly basic example pattern that renders a plane that can be moved
-// across one of the axes.
 @LXCategory("Form")
 public static class PlanePattern extends LXPattern {
   

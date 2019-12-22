@@ -7,11 +7,9 @@ LXModel buildModel() {
 }
 
 public static class Kubus extends LXModel {
-
   public Kubus() {
     super(new Fixture());
   }
-
   public static class Fixture extends LXAbstractFixture {
     Board boards[] = { 
       new Board(new LXVector(       0,        0, -WIDTH/2), new LXVector(SPACING,      0,      0), new LXVector(       0, -SPACING,       0)),
@@ -26,30 +24,37 @@ public static class Kubus extends LXModel {
         addPoints(board);
     }
   }
+}
 
-  public static class Board extends LXModel {
-    public Board(LXVector origin, LXVector colstep, LXVector rowstep) {
-      super(new Fixture(origin, colstep, rowstep));
-    }
-
-    public static class Fixture extends LXAbstractFixture {
-      Fixture(LXVector origin, LXVector colstep, LXVector rowstep) {
-        LXVector pos = origin
-          .sub(new LXVector(colstep).mult(SIZE/2-0.5))
-          .sub(new LXVector(rowstep).mult(SIZE/2-0.5));
-        for (int row = 0; row < SIZE; ++row) {
-          for (int col = 0; col < SIZE; ++col) {
-            addPoint(new LXPoint(pos));
-            if (col < SIZE-1) {
-              if (row %2 ==0) {
-                pos.add(colstep);
-              } else {
-                pos.sub(colstep);
-              }
+public static class Board extends LXModel {
+  public Board(LXVector origin, LXVector colstep, LXVector rowstep) {
+    super(new Fixture(origin, colstep, rowstep));
+  }
+  public static class Fixture extends LXAbstractFixture {
+    Fixture(LXVector origin, LXVector colstep, LXVector rowstep) {
+      LXVector pos = origin
+        .sub(new LXVector(colstep).mult(SIZE/2-0.5))
+        .sub(new LXVector(rowstep).mult(SIZE/2-0.5))
+        .rotate((float)Math.toRadians(-45), 0, 0, 1)
+        .rotate((float)Math.acos(Math.sqrt((double)2/3)), 1, 0, 0);
+      colstep
+        .rotate((float)Math.toRadians(-45), 0, 0, 1)
+        .rotate((float)Math.acos(Math.sqrt((double)2/3)), 1, 0, 0);
+      rowstep
+        .rotate((float)Math.toRadians(-45), 0, 0, 1)
+        .rotate((float)Math.acos(Math.sqrt((double)2/3)), 1, 0, 0);
+      for (int row = 0; row < SIZE; ++row) {
+        for (int col = 0; col < SIZE; ++col) {
+          addPoint(new LXPoint(pos));
+          if (col < SIZE-1) {
+            if (row%2 ==0) {
+              pos.add(colstep);
+            } else {
+              pos.sub(colstep);
             }
           }
-          pos.add(rowstep);
         }
+        pos.add(rowstep);
       }
     }
   }

@@ -8,17 +8,11 @@ void setup() {
 
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
   try {
-    LXDatagramOutput output = new LXDatagramOutput(lx);
-    for (int f=0; f<6; f++) {
-      int[] pointIndices = new int[144];
-      for (int i=0; i<144; i++) {
-        pointIndices[i] = i+f*144;
-      };
-      output.addDatagram(new StreamingACNDatagram(1+f, pointIndices).setAddress("kubus.moesch.org"));
-    }
-    lx.engine.addOutput(output);
-  }
-  catch (Exception e) {
+    Serial port = new Serial(this, "/dev/ttyUSB0", 460800);
+    SerialOutput serial = new SerialOutput(lx, port);
+    lx.engine.addOutput(serial);
+  } 
+  catch (RuntimeException e) {
   }
 }
 

@@ -7,11 +7,13 @@ LXModel buildModel() {
 }
 
 public static class Kubus extends LXModel {
+  Board boards[];
   public Kubus() {
     super(new Fixture());
+    boards = Fixture.boards;
   }
   public static class Fixture extends LXAbstractFixture {
-    Board boards[] = { 
+    static Board boards[] = { 
       new Board(new LXVector(       0,        0, -WIDTH/2), new LXVector(SPACING,      0,      0), new LXVector(       0, -SPACING,       0)),
       new Board(new LXVector(       0,  WIDTH/2,        0), new LXVector(SPACING,      0,      0), new LXVector(       0,        0,-SPACING)),
       new Board(new LXVector(-WIDTH/2,        0,        0), new LXVector(      0,SPACING,      0), new LXVector(       0,        0,-SPACING)),

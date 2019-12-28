@@ -14,7 +14,7 @@ void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStu
       for (int i=0; i<144; i++) {
         pointIndices[i] = i+f*144;
       };
-      output.addDatagram(new StreamingACNDatagram(1+f, pointIndices).setAddress("192.168.2.142"));
+      output.addDatagram(new StreamingACNDatagram(1+f, pointIndices).setAddress("kubus.moesch.org"));
     }
     lx.engine.addOutput(output);
   }

@@ -1,4 +1,4 @@
-import java.util.Arrays;
+import java.util.LinkedList;
 
 @LXCategory("Form")
   public static class PlanePattern extends LXPattern {
@@ -141,6 +141,132 @@ import java.util.Arrays;
         min = Math.min(elevation, min);
         max = Math.max(elevation, max);
       }
+    }
+  }
+}
+
+@LXCategory("Test")
+  public class SnakePattern extends LXPattern {
+
+  public final CompoundParameter period =
+    (CompoundParameter) new CompoundParameter("Period", 300, 10, 60000)
+    .setDescription("Sets the step period in msecs")
+    .setExponent(4)
+    .setUnits(LXParameter.Units.MILLISECONDS);
+
+  public final CompoundParameter turnperiod =
+    (CompoundParameter) new CompoundParameter("Turn Period", 1000, 10, 60000)
+    .setDescription("Sets the turn period in msecs")
+    .setExponent(4)
+    .setUnits(LXParameter.Units.MILLISECONDS);
+
+  public final CompoundParameter len =
+    (CompoundParameter) new CompoundParameter("Length", 10, 5, 50)
+    .setDescription("Sets the length of the snake");
+
+  public final DiscreteParameter dir = new DiscreteParameter("Direction", 8);
+
+  KubusPoint point;
+  LinkedList<KubusPoint> points;
+
+  public SnakePattern(LX lx) {
+    super(lx);
+    addParameter(period);
+    addParameter(turnperiod);
+    addParameter(len);
+    addParameter(dir);
+    point = ((Kubus)model).boards[3].xy(5, 5);
+    points = new LinkedList<KubusPoint>();
+    points.add(point);
+  }
+  double steptimestamp, turntimestamp;
+  public void run(double deltaMs) {
+    steptimestamp += deltaMs;
+    turntimestamp += deltaMs;
+    if (turntimestamp > turnperiod.getValue()) {
+      turntimestamp = 0;
+      float r = random(-2.5, 2.5);
+      dir.setValue((dir.getValuei()+r)%8);
+    }
+    if (steptimestamp > period.getValue()) {
+      steptimestamp = 0;
+      KubusPoint next = point.neighbors[dir.getValuei()];
+      int fromboard = point.index/144;
+      int toboard   = next.index/144;
+      switch (fromboard) {
+      case 0:
+        switch (toboard) {
+        case 1:
+          dir.setValue((dir.getValuei()+2)%8);
+          break;
+        case 2:
+          dir.setValue((dir.getValuei()-2)%8);
+          break;
+        }
+        break;
+      case 1:
+        switch (toboard) {
+        case 0:
+          dir.setValue((dir.getValuei()-2)%8);
+          break;
+        case 2:
+          dir.setValue((dir.getValuei()+2)%8);
+          break;
+        }
+        break;
+      case 2:
+        switch (toboard) {
+        case 0:
+          dir.setValue((dir.getValuei()+2)%8);
+          break;
+        case 1:
+          dir.setValue((dir.getValuei()-2)%8);
+          break;
+        }
+        break;
+      case 3:
+        switch (toboard) {
+        case 4:
+          dir.setValue((dir.getValuei()-2)%8);
+          break;
+        case 5:
+          dir.setValue((dir.getValuei()+2)%8);
+          break;
+        }
+        break;
+      case 4:
+        switch (toboard) {
+        case 3:
+          dir.setValue((dir.getValuei()+2)%8);
+          break;
+        case 5:
+          dir.setValue((dir.getValuei()-2)%8);
+          break;
+        }
+        break;
+      case 5:
+        switch (toboard) {
+        case 3:
+          dir.setValue((dir.getValuei()-2)%8);
+          break;
+        case 4:
+          dir.setValue((dir.getValuei()+2)%8);
+          break;
+        }
+        break;
+      }
+
+      point = next;
+      points.add(point);
+      while (points.size()>len.getValue()) points.remove();
+
+      for (LXPoint p : model.points) {
+        colors[p.index] = LXColor.gray(0);
+      }
+      for (LXPoint p : points) {
+        colors[p.index] = LXColor.gray(100);
+      }
+      colors[point.index] = 0xFFFF0000;
     }
   }
 }

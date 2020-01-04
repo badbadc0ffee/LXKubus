@@ -125,11 +125,22 @@ import java.util.Arrays;
   }
 
   public void run(double deltaMs) {
-    double rotation = rot.getValue()/360*TWO_PI;
-    for (LXPoint p : model.points) {
-      colors[p.index] = LXColor.gray(100); 
-      color pixelcolor = image.get((int)(image.width*(p.azimuth+rotation)/TWO_PI), (int)(image.height*(PI/2+p.elevation)/PI));
-      colors[p.index]= pixelcolor;
+    if (image != null) {
+      double max = 0;
+      double min = 0;
+
+      double rotation = rot.getValue()/360*TWO_PI;
+      for (LXPoint p : model.points) {
+        int x = (int)(image.width*(p.azimuth+rotation)/TWO_PI);
+        x %= image.width;
+        double elevation=p.elevation;
+        if (elevation>PI) elevation = elevation-TWO_PI;
+        int y = (int)(image.height*(HALF_PI-elevation)/(PI));
+        y %= image.height;
+        colors[p.index] = image.get(x, y);
+        min = Math.min(elevation, min);
+        max = Math.max(elevation, max);
+      }
     }
   }
 }

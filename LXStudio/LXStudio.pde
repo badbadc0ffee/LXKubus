@@ -7,6 +7,7 @@ void setup() {
 }
 
 void initialize(final heronarts.lx.studio.LXStudio lx, heronarts.lx.studio.LXStudio.UI ui) {
+  MapPattern.image = loadImage("world.png");
   try {
     Serial port = new Serial(this, "/dev/ttyUSB0", 460800);
     SerialOutput serial = new SerialOutput(lx, port);

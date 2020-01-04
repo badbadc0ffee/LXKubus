@@ -133,6 +133,77 @@ import java.util.Arrays;
     }
   }
 }
+
+@LXCategory("Test")
+  public static class GameOfLifePattern extends LXPattern {
+
+  public final CompoundParameter period =
+    (CompoundParameter) new CompoundParameter("Period", 1000, 100, 60000)
+    .setDescription("Sets the epoch period in msecs")
+    .setExponent(4)
+    .setUnits(LXParameter.Units.MILLISECONDS);
+
+  boolean alive[];
+  boolean nextGen[];
+  private int neighborsCount(KubusPoint p) {
+    int neighbors = 0;
+    for (KubusPoint neighbor : p.neighbors) {
+      if (alive[neighbor.index]) neighbors++;
+    }
+    return neighbors;
+  }
+  public GameOfLifePattern(LX lx) {
+    super(lx);
+    addParameter("period", period);
+
+    alive   = new boolean[model.points.length];
+    nextGen = new boolean[model.points.length];
+
+    Kubus kubus = ((Kubus)model);
+    Board board = kubus.boards[0];
+    alive[board.xy(5, 6).index] = true;
+    alive[board.xy(5, 7).index] = true;
+    alive[board.xy(6, 5).index] = true;
+    alive[board.xy(6, 6).index] = true;
+    alive[board.xy(7, 6).index] = true;
+  }
+
+  double timestamp;
+  public void run(double deltaMs) {
+    timestamp += deltaMs;
+    int cellcount = 0;
+    for (boolean a : alive) {
+      if (a) cellcount++;
+    }
+    for (LXPoint p : model.points) {
+      if (cellcount<100 && neighborsCount((KubusPoint)p)==0 && !alive[p.index]) {
+        if (Math.random() < 0.0001) {
+          KubusPoint point = (KubusPoint)p;
+          alive[point.neighbors[0].index] = true;
+          alive[point.neighbors[2].index] = true;
+          alive[point.neighbors[3].index] = true;
+          alive[point.neighbors[4].index] = true;
+          alive[point.neighbors[5].index] = true;
+          cellcount+=5;
+        }
+      }
+      colors[p.index] = alive[p.index] ? LXColor.gray(100) : LXColor.gray(0);
+    }
+    if (timestamp > period.getValue()) {
+      timestamp = 0;
+      for (LXPoint p : model.points) {
+        KubusPoint point = (KubusPoint)p;
+        int neighbors = neighborsCount(point);
+        boolean living = alive[point.index];
+        nextGen[point.index] = (living && neighbors==2) || neighbors==3;
+      }
+      for (LXPoint p : model.points) {
+        alive[p.index] = nextGen[p.index];
+      }
+    }
+  }
+}
+
 /**
  * This file has a bunch of example patterns, each illustrating the key
  * concepts and tools of the LX framework.
